@@ -1,4 +1,4 @@
-import math
+import mpmath as m
 import sys
 import numpy as np
 import sympy as sp
@@ -37,8 +37,8 @@ def transl(vx,vy,vz):
 
 def rotz(q):
   Tz = sp.Matrix(
-    [[sp.cos(math.radians(q)), -sp.sin(math.radians(q)), 0, 0],
-     [sp.sin(math.radians(q)), sp.cos(math.radians(q)), 0, 0],
+    [[m.cos(m.radians(q)), -m.sin(m.radians(q)), 0, 0],
+     [m.sin(m.radians(q)), m.cos(m.radians(q)), 0, 0],
      [0, 0, 1, 0],
      [0, 0, 0, 1]]
      )
@@ -47,17 +47,17 @@ def rotz(q):
 def rotx(q):
   Tx = sp.Matrix(
     [[1, 0, 0, 0],
-     [sp.cos(math.radians(q)), -sp.sin(math.radians(q)), 0, 0],
-     [sp.sin(math.radians(q)), sp.cos(math.radians(q)), 0, 0],
+     [m.cos(m.radians(q)), -m.sin(m.radians(q)), 0, 0],
+     [m.sin(m.radians(q)), m.cos(m.radians(q)), 0, 0],
      [0, 0, 0, 1]]
      )
   return Tx  
 
 def roty(q):
   Ty = sp.Matrix(
-    [[sp.cos(math.radians(q)), 0, sp.sin(math.radians(q)), 0],
+    [[m.cos(m.radians(q)), 0, m.sin(m.radians(q)), 0],
      [0, 1, 0, 0],
-     [-sp.sin(math.radians(q)), sp.cos(math.radians(q)), 0, 0],
+     [-m.sin(m.radians(q)), m.cos(m.radians(q)), 0, 0],
      [0, 0, 0, 1]]
      )
   return Ty  
@@ -97,7 +97,7 @@ class Frame(Node):
   
 #### Transformation tree
 
-def round_expr(expr, num_digits):
+def round_expr(expr, num_digits=2):
   return expr.xreplace({n : round(n, num_digits) for n in expr.atoms(sp.Number)})
 
 class TransformationTree(object):
@@ -120,6 +120,15 @@ class TransformationTree(object):
     n = H*sp.Matrix(v)
     display(H)
     return n
+
+  def plotInFrame(self, v, ax, frame_id, artist='o-'):
+    O_ax = sp.Matrix([0,0,0,1])
+    v = sp.Matrix(v)
+    NO_ax = self.Hs[frame_id]*O_ax
+    Nv = self.Hs[frame_id]*v     
+    ax.plot( (NO_ax[0], Nv[0]), (NO_ax[1], Nv[1]), artist, lw=4, mew=5, alpha=0.7)
+    return NO_ax, Nv
+
       
   def plot_frames(self, fsize=(9,9), xl=(-2, 5),yl=(-2,5), verbose=False):
     # set up figure

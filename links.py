@@ -30,17 +30,10 @@ class MultiLink(object):
         self.links.append(l)
         return l
 
-    def plotInFrame(self, v, ax, frame_id):
-        O_ax = sp.Matrix([0,0,0,1])
-        v = sp.Matrix(v)
-        NO_ax = self.tt.Hs[frame_id]*O_ax
-        Nv = self.tt.Hs[frame_id]*v     
-        ax.plot( (NO_ax[0], Nv[0]), (NO_ax[1], Nv[1]), 'o-', lw=4, mew=5, alpha=0.7)
-    
     def plotLinks(self):
         ax, _ = self.tt.plot_frames(xl=(-1, 6),yl=(-1,6))
         for i,link in enumerate(self.links):
-            self.plotInFrame([link.l, 0, 0, 1], ax,i+1)
+            self.tt.plotInFrame([link.l, 0, 0, 1], ax,i+1)
     
 if __name__ == '__main__':
   from sympy import init_printing, pprint
