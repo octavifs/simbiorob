@@ -138,6 +138,13 @@ class TransformationTree(object):
     ax.plot( (NO_ax[0], Nv[0]), (NO_ax[1], Nv[1]), artist, lw=4, mew=5, alpha=0.7)
     return NO_ax, Nv
 
+  def compose(self):
+    H = identity()
+    for node in PreOrderIter(self.root):
+      H *= node.T
+      self.Hs.append(H)
+
+    return H
       
   def plot_frames(self, fsize=(9,9), xl=(-2, 5),yl=(-2,5), verbose=False):
     # set up figure
