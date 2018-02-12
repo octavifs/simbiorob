@@ -2,18 +2,19 @@
 
 import frames 
 import sympy as sp
+import matplotlib.pyplot as plt
 
 class Link(frames.Frame):
     def __init__(self, lid, l, angle):
         self.lid = lid
         self.l = l
-        self.angle = angle
-        t = "rotz(%.2f)"%angle
+        self.angle = str(angle)
+        t = "rotz(%s)"%str(angle)
         super(Link, self).__init__(lid, transf=t)
   
     def _post_attach(self, parent):
         if isinstance(parent, Link):
-            self.transf = "transl(%.2f,.0,.0)"%parent.l + "*" + self.transf
+            self.transf = "transl(%s,.0,.0)"%str(parent.l) + "*" + self.transf
             #print "New transf", self.transf
             self._parseTransf()
     
