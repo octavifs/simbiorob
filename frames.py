@@ -18,7 +18,12 @@ yaxis = sp.Matrix([0,1,0,1]).T
 zaxis = sp.Matrix([0,0,1,1]).T
 rads = 0.0174532925199433
 
+SYM_TABLE = {}
+
 #### Basic functions
+def rad(a):
+  return m.radians(a)
+
 def identity():
   T = sp.Matrix(
     [[1, 0, 0, 0],
@@ -39,8 +44,8 @@ def transl(vx,vy,vz):
 
 def rotz(q):
   Tz = sp.Matrix(
-    [[sp.cos(m.radians(q)), -sp.sin(m.radians(q)), 0, 0],
-     [sp.sin(m.radians(q)), sp.cos(m.radians(q)), 0, 0],
+    [[sp.cos(rad(q)), -sp.sin(rad(q)), 0, 0],
+     [sp.sin(rad(q)), sp.cos(rad(q)), 0, 0],
      [0, 0, 1, 0],
      [0, 0, 0, 1]]
      )
@@ -49,17 +54,17 @@ def rotz(q):
 def rotx(q):
   Tx = sp.Matrix(
     [[1, 0, 0, 0],
-     [sp.cos(m.radians(q)), -sp.sin(m.radians(q)), 0, 0],
-     [sp.sin(m.radians(q)), sp.cos(m.radians(q)), 0, 0],
+     [sp.cos(rad(q)), -sp.sin(rad(q)), 0, 0],
+     [sp.sin(rad(q)), sp.cos(rad(q)), 0, 0],
      [0, 0, 0, 1]]
      )
   return Tx  
 
 def roty(q):
   Ty = sp.Matrix(
-    [[sp.cos(m.radians(q)), 0, sp.sin(m.radians(q)), 0],
+    [[sp.cos(rad(q)), 0, sp.sin(rad(q)), 0],
      [0, 1, 0, 0],
-     [-sp.sin(m.radians(q)), sp.cos(m.radians(q)), 0, 0],
+     [-sp.sin(rad(q)), sp.cos(rad(q)), 0, 0],
      [0, 0, 0, 1]]
      )
   return Ty  
@@ -73,7 +78,10 @@ def toList(s):
     return [s]
 
 def SYMB(s):
-  return sp.Symbol(s)
+  if s not in SYM_TABLE:
+    sym = sp.Symbol(s, real=True)
+    SYM_TABLE[s] = sym
+  return SYM_TABLE[s]
 
 def _parseArgs(s):
   """ Transforms s:arg in SYMB('arg') """
@@ -159,13 +167,13 @@ class TransformationTree(object):
     x_ax = sp.Matrix([1,0,0,1])
     y_ax = sp.Matrix([0,1,0,1])
     z_ax = sp.Matrix([0,0,1,1])                    
-    H = identity()
 
     cmap = plt.cm.jet
     cNorm  = colors.Normalize(vmin=0, vmax=5)
 
     scalarMap = cmx.ScalarMappable(norm=cNorm,cmap=cmap)
 
+    H = identity()
     frames = []
     for i, node in enumerate(PreOrderIter(self.root)):
       H *= node.T
@@ -216,7 +224,11 @@ if __name__ == "__main__":
   plt.savefig("frames.png")
 
   tt = TransformationTree()
-  A = Frame("A", transf="rotz(s:alpha)", parent=tt.root)
+  A = Frame("A", transf="rotz(s:alpha)*transl(s:L1,0,0)", parent=tt.root)
+  B = Frame("B", transf="rotz(s:beta)", parent=A)
   print tt
-  print A.T
+  tt_eff = tt.compose()*sp.Matrix([SYMB("L2"),0,0,1])
+  print tt_eff
+  ab = [SYMB("alpha"),SYMB("beta")]
+  print tt_eff.jacobian(ab)
   
