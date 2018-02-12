@@ -2,6 +2,7 @@ import mpmath as m
 import sys
 import numpy as np
 import sympy as sp
+import re
 
 from anytree import Node, RenderTree, PreOrderIter
 
@@ -70,6 +71,13 @@ def toList(s):
   else:
     return [s]
 
+def SYMB(s):
+  return sp.Symbol(s)
+
+def _parseArgs(s):
+  """ Transforms s:arg in SYMB('arg') """
+  return  re.sub(r's:(\w+)', r"SYMB('\1')", s) 
+
 class Frame(Node):
   def __init__(self, name, transf="identity()", **kwargs):
     super(Frame, self).__init__(str(name), **kwargs)
@@ -80,8 +88,8 @@ class Frame(Node):
     ts = toList(self.transf)
     H = identity()
     for t in ts:
-        if t: t = eval(t)
-        H *= t
+      t = eval(_parseArgs(t))
+      H *= t
     self.T = H
       
   def _post_detach(self, parent):
@@ -198,4 +206,9 @@ if __name__ == "__main__":
   tt.plot_frames()
   
   plt.savefig("frames.png")
+
+  tt = TransformationTree()
+  A = Frame("A", transf="rotz(s:alpha)", parent=tt.root)
+  print tt
+  print A.T
   
