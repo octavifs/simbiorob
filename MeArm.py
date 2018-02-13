@@ -2,17 +2,16 @@
 
 import os, sys
 import time
-import wiringpi
+
 import pythonSB as sb
-# use 'GPIO naming'
-#wiringpi.wiringPiSetupGpio()
+
 
 class ServoSB(object):
-  def __init__(self, pin, minAngle=5, maxAngle=175):
+  def __init__(self, pin, minAngle=0, maxAngle=180):
     """Pin number, min us output, max us output, min angle, max angle """ 
     self.pin = int(pin)
-    self.minUS = 1000
-    self.maxUS = 2000
+    self.minUS = 50
+    self.maxUS = 250
     self.minAngle = minAngle
     self.maxAngle = maxAngle
     self._configure()
@@ -26,6 +25,9 @@ class ServoSB(object):
 
 class ServoWPI(object):
   def __init__(self, pin):
+    import wiringpi
+    # use 'GPIO naming'
+    wiringpi.wiringPiSetupGpio()
     self.pin = int(pin)
   
   def _hd_init(self):
@@ -53,5 +55,8 @@ class ServoWPI(object):
       wiringpi.softPwmWrite(self.pin, pulse)
 
 if __name__ == '__main__':
-  s7 = Servo(7)
+  s7 = ServoSB(7)
   s7.set_angle(90)
+
+  s7b = ServoSB(7, -90, 90)
+  s7b.set_angle(0)

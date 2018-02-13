@@ -16,7 +16,6 @@ import matplotlib.cm as cmx
 xaxis = sp.Matrix([1,0,0,1]).T
 yaxis = sp.Matrix([0,1,0,1]).T
 zaxis = sp.Matrix([0,0,1,1]).T
-rads = 0.0174532925199433
 
 SYM_TABLE = {}
 
