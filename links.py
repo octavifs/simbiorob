@@ -44,7 +44,7 @@ class MultiLink(object):
         return l
 
     def plotLinks(self):
-        ax, _ = self.tt.plot_frames(xl=(-1, 6),yl=(-1,6))
+        ax, _ = self.tt.plot_frames(xl=(-1, 20),yl=(-1,20))
         for i,link in enumerate(self.links):
             self.tt.plotInFrame([link.l, 0, 0, 1], ax,i+1)
         self.tt.plotInFrame(self.eff, ax, i+1)
