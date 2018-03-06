@@ -44,8 +44,8 @@ def main():
             if joy.rightY():
                 command_issued = True
                 servos["upward"].percent_position += PERCENT_INCREASE * joy.rightY()
-
             if joy.Start():
+                command_issued = True
                 for servo in servos.values():
                     servo.reset()
 
