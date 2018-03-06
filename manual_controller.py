@@ -2,6 +2,7 @@
 # Needs servoblaster running and xboxdrv installed
 import xbox
 from servos import Servo
+import time
 
 TIMESTEP = 0.2  # seconds
 PERCENT_INCREASE = 10 # % of max range
