@@ -4,8 +4,8 @@ import xbox
 from servos import Servo
 import time
 
-TIMESTEP = 0.03  # seconds
-PERCENT_INCREASE = 2 # % of max range
+TIMESTEP = 0.04  # seconds
+PERCENT_INCREASE = 3 # % of max range
 
 sign = lambda x: (1, -1)[x < 0]
 
