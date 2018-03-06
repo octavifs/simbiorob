@@ -27,7 +27,6 @@ class Servo(object):
         if pos > self.position_range[1] or pos < self.position_range[0]:
             raise Exception("%d out of range [%d, %d]" % (pos, self.position_range[0], self.position_range[1]))
         self._position = pos
-        print "%s=%d%%\n" % (self.pin, self._position)
         self.sb_fd.write("%s=%d%%\n" % (self.pin, self._position))
         self.sb_fd.flush()
 
