@@ -39,8 +39,10 @@ class Servo(object):
     @percent_position.setter
     def percent_position(self, percent):
         percent = percent / 100.0
-        if percent > 100 or percent < 0:
-            raise Exception("%d out of range [0, 100]" % (percent,))
+        if percent > 100:
+            percent = 100
+        else if percent < 0:
+            percent = 0
         self.position = (self.position_range[1] - self.position_range[0]) * percent + self.position_range[0]
 
     @property
