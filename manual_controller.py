@@ -5,7 +5,7 @@ from servos import Servo
 import time
 
 TIMESTEP = 0.04  # seconds
-PERCENT_INCREASE = 4 # % of max range
+PERCENT_INCREASE = 5 # % of max range
 
 def main():
     with open("/dev/servoblaster", "w") as sb_fd:
@@ -34,7 +34,7 @@ def main():
                 servos["claw"].percent_position -= PERCENT_INCREASE * joy.leftTrigger()
             if joy.rightTrigger():
                 command_issued = True
-                servos["claw"].percent_position -= PERCENT_INCREASE * joy.rightTrigger()
+                servos["claw"].percent_position += PERCENT_INCREASE * joy.rightTrigger()
             if joy.leftY():
                 command_issued = True
                 servos["forward"].percent_position += PERCENT_INCREASE * joy.leftY()
