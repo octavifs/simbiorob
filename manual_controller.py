@@ -5,7 +5,7 @@ from servos import Servo
 import time
 
 TIMESTEP = 0.04  # seconds
-PERCENT_INCREASE = 4 # % of max range
+PERCENT_INCREASE = 10 # % of max range
 
 def main():
     with open("/dev/servoblaster", "w") as sb_fd:
