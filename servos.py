@@ -1,62 +1,62 @@
-#!/usr/bin/python
-
-import os, sys
-import time
-
-import pythonSB as sb
+# Servo class
 
 
-class ServoSB(object):
-  def __init__(self, pin, minAngle=0, maxAngle=180):
-    """Pin number, min us output, max us output, min angle, max angle """ 
-    self.pin = int(pin)
-    self.minUS = 50
-    self.maxUS = 250
-    self.minAngle = minAngle
-    self.maxAngle = maxAngle
-    self._configure()
+class Servo(object):
+    def __init__(
+        self,
+        servoblaster_fd,
+        pin,
+        position_range,
+        angle_range,
+    ):
+        self.sb_fd = servoblaster_fd
+        self.pin = str(pin)
+        self.position_range = position_range
+        self.angle_range = angle_range
 
-  def _configure(self):
-    sb.servo_configure(self.pin, 
-          self.minUS, self.maxUS, self.minAngle, self.maxAngle) 
+        self._position = None
+        self.reset()
 
-  def set_angle(self, angle):
-    sb.servo_set_angle(self.pin, int(angle))
+    @property
+    def position(self):
+        return self._position
 
-class ServoWPI(object):
-  def __init__(self, pin):
-    import wiringpi
-    # use 'GPIO naming'
-    wiringpi.wiringPiSetupGpio()
-    self.pin = int(pin)
-  
-  def _hd_init(self):
-    if self.pin == 18: # Use hardware PWM
-      print("Initializing hardware PWM on pin #18")
-      # set #18 to be a PWM output
-      wiringpi.pinMode(18, wiringpi.GPIO.PWM_OUTPUT)
-      # set the PWM mode to milliseconds stype
-      wiringpi.pwmSetMode(wiringpi.GPIO.PWM_MODE_MS)
-      # divide down clock
-      wiringpi.pwmSetClock(192)
-      wiringpi.pwmSetRange(2000)
-   
-    else:
-      print("Initializing hardware PWM on pin #%d"%self.pin)
-      # set #pin to be a normal output
-      wiringpi.pinMode(self.pin, wiringpi.GPIO.OUTPUT)
-      # Setup software PWM using Pin, Initial Value and Range parameters
-      wiringpi.softPwmCreate(self.pin, 0, 100)
+    @position.setter
+    def position(self, pos):
+        pos = int(pos)
+        if pos > self.position_range[1] or pos < self.position_range[0]:
+            raise Exception("%d out of range [%d, %d]" % (pos, self.position_range[0], self.position_range[1]))
+        self._position = pos
+        print "%s=%d%%\n" % (self.pin, self._position)
+        self.sb_fd.write("%s=%d%%\n" % (self.pin, self._position))
+        self.sb_fd.flush()
 
-  def pwm(self, pulse=100):
-    if self.pin == 18:
-      wiringpi.pwmWrite(self.pin, pulse)
-    else:
-      wiringpi.softPwmWrite(self.pin, pulse)
+    @property
+    def percent_position(self):
+        position_percentage = (self.position - self.position_range[0] + 0.0) / (self.position_range[1] - self.position_range[0])
+        return int(position_percentage * 100)
 
-if __name__ == '__main__':
-  s7 = ServoSB(7)
-  s7.set_angle(90)
+    @percent_position.setter
+    def percent_position(self, percent):
+        percent = percent / 100.0
+        if percent > 100 or percent < 0:
+            raise Exception("%d out of range [0, 100]" % (percent,))
+        self.position = (self.position_range[1] - self.position_range[0]) * percent + self.position_range[0]
 
-  s7b = ServoSB(7, -90, 90)
-  s7b.set_angle(0)
+    @property
+    def angle_position(self):
+        angle = (self.angle_range[1] - self.angle_range[0]) * self.percent_position + self.angle_range[0]
+        return angle
+
+    @angle_position.setter
+    def angle_position(self, angle):
+        angle_percentage = (angle - self.angle_range[0] + 0.0) / (self.angle_range[1] - self.angle_range[0])
+        position = (self.position_range[1] - self.position_range[0]) * angle_percentage + self.position_range[0]
+        self.position = position
+
+    def reset(self):
+        self.position = (self.position_range[1] - self.position_range[0]) / 2 + self.position_range[0]
+
+    def stop(self):
+        self.sb_fd.write("%s=0\n" % (self.pin,))
+        self.sb_fd.flush()
