@@ -4,8 +4,8 @@ import xbox
 from servos import Servo
 import time
 
-TIMESTEP = 0.2  # seconds
-PERCENT_INCREASE = 10 # % of max range
+TIMESTEP = 0.1  # seconds
+PERCENT_INCREASE = 5 # % of max range
 
 def main():
     with open("/dev/servoblaster", "w") as sb_fd:
@@ -35,15 +35,15 @@ def main():
             if joy.rightTrigger():
                 command_issued = True
                 servos["claw"].percent_position -= PERCENT_INCREASE * joy.leftTrigger()
-            if joy.leftX():
-                command_issued = True
-                servos["forward"].percent_position += PERCENT_INCREASE * joy.leftX()
             if joy.leftY():
                 command_issued = True
-                servos["base"].percent_position -= PERCENT_INCREASE * joy.leftY()
-            if joy.rightX():
+                servos["forward"].percent_position += PERCENT_INCREASE * joy.leftY()
+            if joy.leftX():
                 command_issued = True
-                servos["upward"].percent_position += PERCENT_INCREASE * joy.rightX()
+                servos["base"].percent_position -= PERCENT_INCREASE * joy.leftX()
+            if joy.rightY():
+                command_issued = True
+                servos["upward"].percent_position += PERCENT_INCREASE * joy.rightY()
 
             if joy.Start():
                 for servo in servos.values():
@@ -51,6 +51,9 @@ def main():
 
             if command_issued:
                 last_event = time.time() + TIMESTEP
+
+        joy.close()
+
 
 if __name__ == '__main__':
     main()
