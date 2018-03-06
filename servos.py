@@ -41,7 +41,7 @@ class Servo(object):
         percent = percent / 100.0
         if percent > 100:
             percent = 100
-        else if percent < 0:
+        elif percent < 0:
             percent = 0
         self.position = (self.position_range[1] - self.position_range[0]) * percent + self.position_range[0]
 
