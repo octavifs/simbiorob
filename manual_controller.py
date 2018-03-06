@@ -4,7 +4,7 @@ import xbox
 from servos import Servo
 import time
 
-TIMESTEP = 0.1  # seconds
+TIMESTEP = 0.05  # seconds
 PERCENT_INCREASE = 5 # % of max range
 
 def main():
@@ -34,13 +34,13 @@ def main():
                 servos["claw"].percent_position += PERCENT_INCREASE * joy.leftTrigger()
             if joy.rightTrigger():
                 command_issued = True
-                servos["claw"].percent_position -= PERCENT_INCREASE * joy.leftTrigger()
+                servos["claw"].percent_position -= PERCENT_INCREASE * joy.rightTrigger()
             if joy.leftY():
                 command_issued = True
                 servos["forward"].percent_position += PERCENT_INCREASE * joy.leftY()
             if joy.leftX():
                 command_issued = True
-                servos["base"].percent_position -= PERCENT_INCREASE * joy.leftX()
+                servos["base"].percent_position += PERCENT_INCREASE * joy.leftX()
             if joy.rightY():
                 command_issued = True
                 servos["upward"].percent_position += PERCENT_INCREASE * joy.rightY()
