@@ -31,10 +31,10 @@ def main():
             
             if joy.leftTrigger():
                 command_issued = True
-                servos["claw"].percent_position -= PERCENT_INCREASE * joy.leftTrigger()
+                servos["claw"].percent_position = 0.0
             if joy.rightTrigger():
                 command_issued = True
-                servos["claw"].percent_position += PERCENT_INCREASE * joy.rightTrigger()
+                servos["claw"].percent_position = 100.0
             if joy.leftY():
                 command_issued = True
                 servos["forward"].percent_position += PERCENT_INCREASE * joy.leftY()
